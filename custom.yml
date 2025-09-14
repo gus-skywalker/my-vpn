@@ -1,0 +1,4 @@
+username: "gusvpn"
+root_host: "lesmonades.com"
+dns_nameservers: "cloudflare"
+enable_ssh_keygen: true
