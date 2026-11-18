@@ -170,9 +170,11 @@ Contadores do WireGuard reiniciam com recriações; para orçamento mensal, medi
 tráfego OCI agregado da conta. O histórico local e a cota com reservas duráveis
 agora estão ativos; detalhes em [TRAFEGO.md](TRAFEGO.md).
 
-Antes de uso contínuo: cópia externa da identidade de recuperação, testes de
-DNS/IPv6 em mais cenários dos clientes, restart isolado do Docker, novo reboot
-com o controlador, envio externo de avisos e orçamento agregado da conta OCI.
+Em 18/11 passaram restart isolado do Docker e novo reboot com o controlador e
+notificador atuais, seguidos de 15 verificações externas cada. Avisos Telegram,
+backup diário cifrado e cópia/restauração pelo Mac estão ativos; ver TRAFEGO.md.
+Permanecem cópia externa das identidades de recuperação, testes de DNS/IPv6 em
+mais cenários dos clientes e observação do orçamento agregado da conta OCI.
 Não criar automações de limpeza ou atualizações sem uma política definida.
 Nunca executar `docker system prune --volumes` ou remover o volume para atualizar.
 

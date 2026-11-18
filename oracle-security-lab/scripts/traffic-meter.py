@@ -252,6 +252,13 @@ def main():
         if (DATA/'status.json').exists():result['controller']=json.loads((DATA/'status.json').read_text())
         result['service_state']=subprocess.run(['systemctl','is-active','hermes-vpn-traffic.service'],capture_output=True,text=True).stdout.strip()
         result['policy']=policy
+        result['notifications']={'service_state':subprocess.run(['systemctl','is-active','hermes-vpn-notify.service'],capture_output=True,text=True).stdout.strip() or 'not-installed',
+                                 'pending':0,'delivered':0}
+        notification_db=DATA/'notifications.db'
+        if notification_db.is_file():
+            with sqlite3.connect(notification_db.as_uri()+'?mode=ro',uri=True) as db:
+                pending,delivered=db.execute('SELECT sum(delivered IS NULL),sum(delivered IS NOT NULL) FROM outbox').fetchone()
+            result['notifications'].update(pending=pending or 0,delivered=delivered or 0)
         print(json.dumps(result,indent=2))
     else:
         def stop(*_):

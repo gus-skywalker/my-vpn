@@ -30,4 +30,6 @@ print('Última atualização: '+c.get('last_update_utc','unknown'))
 if d['service_state']!='active':print('ATENÇÃO: coletor não está ativo; autorização anterior é limitada ao saldo já reservado.')
 for event in d['events']:
     if event['kind'].startswith('threshold_') or event['kind']=='quota_exhausted':print('AVISO: '+event['kind']+' em '+event['timestamp'])
-print('Avisos locais; sem canal externo configurado. Dados anteriores à coleta não foram reconstruídos.')
+n=d.get('notifications',{})
+print('Telegram: '+n.get('service_state','not-installed')+' | pendentes: '+str(n.get('pending',0))+' | entregues: '+str(n.get('delivered',0)))
+print('Avisos locais permanecem disponíveis. Dados anteriores à coleta não foram reconstruídos.')

@@ -27,8 +27,9 @@ sudo journalctl -u hermes-vpn-traffic.service -n 40 --no-pager
 ```
 
 Avisos de 50%, 75% e 90% correspondem a 4, 6 e 7,2 TB de orçamento comprometido.
-São persistidos no banco e emitidos no journal, uma vez por marco/mês. **Não há
-envio externo configurado**: Telegram/e-mail precisam de um canal próprio.
+São persistidos no banco e emitidos no journal, uma vez por marco/mês. Desde
+18/11 também são enviados ao chat privado do Hermes pelo serviço separado
+hermes-vpn-notify.service, com outbox/recibos e retries; detalhes ao final.
 
 ## O que é contado
 
@@ -192,5 +193,40 @@ Amostra curta do coletor em repouso: aproximadamente 8,83 MiB de memória
 corrente e 0,57% de um núcleo em 10 s; não representa capacidade máxima.
 Evidências consolidadas em `evidence/traffic-rollout/summary.json`.
 
-O reboot completo anterior à implantação passou; um reboot completo com este
-novo controlador ainda deve ser identificado como um ensaio separado.
+Em 18/11 passaram restart isolado do Docker e novo reboot com o controlador e
+notificador atuais. Conjunto pronto em 58,76 s e 110,80 s, respectivamente,
+sem recuperação manual. Ledger consistente, orçamento sem rollback, identidade
+e peers preservados, nenhum reenvio de trabalho de IA. Após cada um passaram
+15 verificações externas do túnel; peers temporários removidos.
+
+## Canal Telegram ativo (18/11/2026)
+
+`traffic-notify.py` e `hermes-vpn-notify.service` estão ativos e habilitados para
+boot, no chat privado vinculado ao HermesNeo10Bot. O notificador não faz polling.
+O coletor de cota não recebe token e não precisa ser reiniciado para habilitar
+o notificador. Este lê eventos de 50/75/90% e esgotamento, sem escrever no ledger,
+e mantém outbox/recibos SQLite separados em state/traffic/notifications.db.
+
+Retries e deduplicação persistentes passaram em teste offline, sem mensagens
+externas ou consumo artificial de franquia. Um envio ambíguo após aceitação no
+Telegram pode duplicar; os avisos incluem período/tipo como identificador.
+Indisponibilidade do bot não altera o corte da cota. O backup passa a incluir
+snapshot consistente dos recibos. Uma mensagem marcada TESTE foi enfileirada
+pelo operador (`sudo python3 scripts/traffic-notify.py --queue-test`), aceita pela
+API e teve recibo persistido em uma tentativa. O consumo/limite do ledger não
+foi modificado. Não foi necessário reiniciar VPN ou coletor. A aceitação da API
+não comprova visualização no dispositivo.
+
+O notificador depende da ponte Telegram do Hermes estar disponível; ao parar
+essa ponte ou usar modo CLI, avisos permanecem pendentes e tentam novamente.
+Os avisos locais e a cota no kernel continuam independentes. O status distingue
+serviço de notificação, pendentes e entregues; notification_channels do coletor
+original descreve seus canais locais, enquanto Telegram pertence ao novo serviço.
+
+Backups diários cifrados agora são coordenados pelo serviço de operações do
+Hermes às 07h UTC/04h de Brasília, com cópia pelo Mac a cada seis horas quando
+conectado. O primeiro par foi copiado e restaurado offline. Rotação no servidor
+apenas para pares registrados por essa rotina, acima de 30 dias, com recibos de
+cópia/restauração correspondentes, preservando sete pares recentes e sete
+recentes verificados. Manuais, não verificados e cópias do Mac são preservados.
+O notificador possui PartOf=docker.service para retomar com o Docker.

@@ -38,5 +38,7 @@ jobs:
         run: bash -n oracle-security-lab/scripts/vpn-entry.sh
       - name: Test traffic ledger without Docker or network
         run: python oracle-security-lab/scripts/test-traffic.py
+      - name: Test private notification delivery offline
+        run: python oracle-security-lab/scripts/test-traffic-notify.py
       - name: Check whitespace
         run: git diff --check HEAD^ HEAD

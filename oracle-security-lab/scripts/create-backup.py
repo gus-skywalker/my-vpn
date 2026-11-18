@@ -57,6 +57,16 @@ with tempfile.TemporaryDirectory(prefix='hermes-vpn-backup-', dir='/dev/shm') as
                     raise SystemExit('Traffic snapshot integrity failed.')
         traffic_snapshot.chmod(0o600)
         files['traffic/traffic.db']=traffic_snapshot
+        notifications=root/'state/traffic/notifications.db'
+        if notifications.is_file():
+            notification_snapshot=work/'notifications.db'
+            with sqlite3.connect(notifications.as_uri()+'?mode=ro',uri=True) as src:
+                with sqlite3.connect(notification_snapshot) as dst:
+                    src.backup(dst)
+                    if dst.execute('PRAGMA integrity_check').fetchall()!=[('ok',)]:
+                        raise SystemExit('Notification snapshot integrity failed.')
+            notification_snapshot.chmod(0o600)
+            files['traffic/notifications.db']=notification_snapshot
         for name,path in {
             'source/traffic-policy.json':root/'config/traffic-policy.json',
             'source/compose.traffic.yaml':root/'compose.traffic.yaml',
@@ -66,6 +76,8 @@ with tempfile.TemporaryDirectory(prefix='hermes-vpn-backup-', dir='/dev/shm') as
             'source/hermes-vpn-traffic.service':root/'systemd/hermes-vpn-traffic.service',
         }.items():files[name]=path
         for name,path in {'source/traffic-status.py':root/'scripts/traffic-status.py',
+                          'source/traffic-notify.py':root/'scripts/traffic-notify.py',
+                          'source/hermes-vpn-notify.service':root/'systemd/hermes-vpn-notify.service',
                           'source/TRAFEGO.md':root/'TRAFEGO.md'}.items():
             if path.is_file():files[name]=path
     if sum(path.stat().st_size for path in files.values())>32*1024*1024:

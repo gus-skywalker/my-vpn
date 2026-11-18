@@ -1,0 +1,28 @@
+[Unit]
+Description=Private Telegram notifications for VPN quota events (no LLM)
+Requires=docker.service
+PartOf=docker.service
+After=docker.service hermes-lab.service hermes-vpn-traffic.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Environment=HOME=/nonexistent
+WorkingDirectory=/opt/hermes-security-vpn
+ExecStart=/usr/bin/python3 /opt/hermes-security-vpn/scripts/traffic-notify.py
+Restart=on-failure
+RestartSec=30
+TimeoutStopSec=50
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/opt/hermes-security-vpn/state/traffic
+MemoryMax=64M
+TasksMax=16
+CPUQuota=5%
+
+[Install]
+WantedBy=multi-user.target

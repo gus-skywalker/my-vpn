@@ -78,6 +78,14 @@ try:
                     raise RuntimeError('Traffic accounting invariant failed in restored copy.')
         target.unlink()
         report.update(traffic_ledger_restored_and_checked=True,traffic_controller_started=False,live_traffic_ledger_overwritten=False)
+    if 'traffic/notifications.db' in files:
+        target=path/'notifications-check.db'
+        target.write_bytes(files['traffic/notifications.db']);target.chmod(0o600)
+        with sqlite3.connect(target) as db:
+            if db.execute('PRAGMA integrity_check').fetchall()!=[('ok',)]:
+                raise RuntimeError('Restored notification receipts integrity failed.')
+            db.execute('SELECT period,kind,attempts,delivered FROM outbox LIMIT 1').fetchall()
+        report['notification_receipts_restored_and_checked']=True
     report['file_hashes_verified']=len(meta['files'])
     container_attempted = True
     run('docker','run','-d','--name',name,'--network','none',
