@@ -1,0 +1,5 @@
+# Production startup must install a closed gate before WireGuard comes up.
+services:
+  vpn:
+    environment:
+      VPN_TRAFFIC_ENFORCE: "1"

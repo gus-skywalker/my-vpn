@@ -1,0 +1,7 @@
+{
+  "version": "15.5.0",
+  "image": "ghcr.io/wg-easy/wg-easy@sha256:071f79a639e9361123a5e57733107320207b844ddbbd92dfa6962f541fe8aac8",
+  "image_id_arm64": "sha256:071f79a639e9361123a5e57733107320207b844ddbbd92dfa6962f541fe8aac8",
+  "architecture": "arm64",
+  "release_url": "https://github.com/wg-easy/wg-easy/releases/tag/v15.5.0"
+}

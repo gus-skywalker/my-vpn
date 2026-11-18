@@ -1,0 +1,58 @@
+name: hermes-security-vpn
+services:
+  vpn:
+    image: ${VPN_IMAGE:?Run scripts/prepare.py}
+    platform: linux/arm64
+    container_name: hermes-security-vpn
+    entrypoint: [/bin/sh, /opt/vpn/vpn-entry.sh]
+    command: [/usr/bin/dumb-init, node, server/index.mjs]
+    cap_drop: [ALL]
+    cap_add: [NET_ADMIN]
+    security_opt: [no-new-privileges:true]
+    read_only: true
+    cpus: 0.25
+    mem_limit: 512m
+    memswap_limit: 512m
+    pids_limit: 128
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=67108864,mode=1777
+      - /run:rw,nosuid,nodev,size=8388608,mode=0755
+    environment:
+      INSECURE: "true"
+      DISABLE_IPV6: "true"
+      DISABLE_VERSION_CHECK: "true"
+      VPN_TRAFFIC_ENFORCE: "1"
+      DEBUG: ""
+      WG_INTERFACE: wg0
+      VPN_ENDPOINT_IPV4: ${VPN_ENDPOINT_IPV4:?Run scripts/prepare.py}
+      VPN_COBUDGET_IPV4: "150.136.11.57"
+    sysctls:
+      net.ipv4.ip_forward: "1"
+      net.ipv4.conf.all.src_valid_mark: "1"
+      net.ipv6.conf.all.disable_ipv6: "1"
+      net.ipv6.conf.default.disable_ipv6: "1"
+    volumes:
+      - wireguard:/etc/wireguard
+      - ./scripts/vpn-entry.sh:/opt/vpn/vpn-entry.sh:ro
+    ports:
+      - "0.0.0.0:51820:51820/udp"
+      - "127.0.0.1:51821:51821/tcp"
+    networks:
+      egress:
+        ipv4_address: 172.30.87.2
+        interface_name: eth0
+        gw_priority: 1
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options: {max-size: 5m, max-file: "3"}
+networks:
+  egress:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-hermes-vpn
+    ipam:
+      config: [{subnet: 172.30.87.0/24}]
+volumes:
+  wireguard:
+    name: hermes-security-vpn_wireguard

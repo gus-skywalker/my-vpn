@@ -1,0 +1,7 @@
+# Use only with a fresh state volume; remove the env-file mount by recreating
+# with compose.yaml after bootstrap. Do not expose the UDP listener yet.
+services:
+  vpn:
+    env_file: [./state/bootstrap.env]
+    ports: !override
+      - "127.0.0.1:51821:51821/tcp"

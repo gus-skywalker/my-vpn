@@ -1,0 +1,13 @@
+[
+  {
+    "direction": "INGRESS",
+    "protocol": "17",
+    "source": "0.0.0.0/0",
+    "sourceType": "CIDR_BLOCK",
+    "isStateless": false,
+    "udpOptions": {
+      "destinationPortRange": {"min": 51820, "max": 51820}
+    },
+    "description": "Personal WireGuard pilot - security laboratory only"
+  }
+]

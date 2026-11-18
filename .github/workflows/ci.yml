@@ -2,8 +2,8 @@
 name: CI
 run-name: ansible-easy-vpn Testing
 on:
-  push:
-  pull_request_review:
+  # Legacy end-to-end workflow provisions cloud servers and changes DNS.
+  # Keep it opt-in; publishing source must not start those operations.
   workflow_dispatch:
     inputs:
       only_ubuntu_22:

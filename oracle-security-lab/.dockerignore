@@ -1,0 +1,6 @@
+state/
+backups/
+evidence/
+upstream/
+.env
+*.conf

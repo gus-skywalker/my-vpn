@@ -1,0 +1,15 @@
+# A Docker-internal client, without direct Internet access, reaches the server
+# through this transit network. Outbound Internet must pass through WireGuard.
+services:
+  vpn:
+    networks:
+      test-transit:
+        ipv4_address: 172.30.88.2
+        interface_name: eth1
+        gw_priority: 0
+networks:
+  test-transit:
+    name: hermes-security-vpn_test-transit
+    internal: true
+    ipam:
+      config: [{subnet: 172.30.88.0/24}]

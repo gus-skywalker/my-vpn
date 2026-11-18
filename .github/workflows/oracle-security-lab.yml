@@ -1,0 +1,42 @@
+name: Oracle VPN lab checks
+
+on:
+  push:
+    paths:
+      - oracle-security-lab/**
+      - .github/workflows/oracle-security-lab.yml
+  pull_request:
+    paths:
+      - oracle-security-lab/**
+      - .github/workflows/oracle-security-lab.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Check Python syntax
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in Path('oracle-security-lab/scripts').glob('*.py'):
+              ast.parse(path.read_text(), filename=str(path))
+          PY
+      - name: Check shell syntax
+        run: bash -n oracle-security-lab/scripts/vpn-entry.sh
+      - name: Test traffic ledger without Docker or network
+        run: python oracle-security-lab/scripts/test-traffic.py
+      - name: Check whitespace
+        run: git diff --check HEAD^ HEAD

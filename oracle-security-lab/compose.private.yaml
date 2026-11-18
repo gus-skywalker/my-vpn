@@ -1,0 +1,5 @@
+# Keep the administrative UI on loopback without any bootstrap credentials.
+services:
+  vpn:
+    ports: !override
+      - "127.0.0.1:51821:51821/tcp"

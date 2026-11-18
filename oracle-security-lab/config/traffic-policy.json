@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "mode": "enforce",
+  "monthly_limit_bytes": 8000000000000,
+  "period_timezone": "UTC",
+  "warning_percentages": [
+    50,
+    75,
+    90
+  ],
+  "lease_bytes": 268435456,
+  "refill_at_fraction": 0.8,
+  "poll_seconds": 1,
+  "sample_seconds": 60,
+  "detail_retention_days": 7,
+  "daily_retention_days": 366,
+  "budget_metric": "vpn_egress: uploads forwarded from wg0 plus encrypted UDP emitted by the server",
+  "notification_channels": [
+    "local_status",
+    "systemd_journal"
+  ]
+}

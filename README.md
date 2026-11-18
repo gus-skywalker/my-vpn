@@ -1,3 +1,18 @@
+# Laboratório VPN Oracle ARM64
+
+A implementação atual está em [oracle-security-lab](oracle-security-lab/README.md):
+WireGuard isolado em Docker, administração privada por SSH, backups cifrados e
+controle persistente de 8 TB/mês compartilhados entre Mac e iPhone.
+
+- [Operação](oracle-security-lab/OPERACAO.md)
+- [Histórico e cota de tráfego](oracle-security-lab/TRAFEGO.md)
+- [Validações e limites](oracle-security-lab/VALIDACAO.md)
+
+A CI do laboratório executa verificações offline. A CI legada de infraestrutura
+fica disponível somente por `workflow_dispatch`, pois provisiona servidores e
+altera DNS. O texto abaixo é a documentação histórica do projeto Ansible original;
+o piloto Oracle tem procedimentos próprios no diretório acima.
+
 # Why is this project archived?
 TL;DR: It wasn't as "easy" as the name suggested, and took too much time to develop, test and debug.
 

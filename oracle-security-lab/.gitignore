@@ -1,0 +1,9 @@
+state/
+backups/
+evidence/
+upstream/
+.env
+*.conf
+__pycache__/
+*.py[cod]
+.DS_Store
